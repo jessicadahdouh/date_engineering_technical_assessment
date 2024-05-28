@@ -1,0 +1,72 @@
+pipeline_steps:
+  - class: LoadDataframeFromPath
+    kwargs:
+      file_type: "csv"
+      filepath_or_buffer: "archive/online_retail.csv"
+  - class: InitializeDatabaseConnection
+  - class: SaveDataframeToDatabase
+    kwargs:
+      schema_name: "retail_schema"
+      table_name: "raw_online_retail"
+  - class: RemoveNulls
+  - class: RemoveDuplicates
+  - class: ValidateData
+  - class: ConvertStrToDatetime
+    kwargs:
+      date_column: "InvoiceDate"
+  - class: ConvertFloatToStr
+    kwargs:
+      str_column: "CustomerID"
+  - class: CreateNewTable
+    kwargs:
+      schema_name: "retail_schema"
+      table_name: "products"
+      table_columns: ['StockCode', 'Description', 'UnitPrice']
+      distinct: 1
+  - class: CreateNewTable
+    kwargs:
+      schema_name: "retail_schema"
+      table_name: "customers"
+      table_columns: ["CustomerID", "Country"]
+      distinct: 1
+  - class: CreateNewTable
+    kwargs:
+      schema_name: "retail_schema"
+      table_name: "sales_transactions"
+      table_columns: ['InvoiceNo', 'StockCode', 'Quantity', 'InvoiceDate', 'CustomerID']
+      distinct: 0
+#  - class: ExecuteQuery
+#    kwargs:
+#      query: "
+#              ALTER TABLE retail_schema.products
+#              ADD CONSTRAINT pk_stock_code
+#              PRIMARY KEY (StockCode);
+#             "
+#  - class: ExecuteQuery
+#    kwargs:
+#      query: "
+#              ALTER TABLE retail_schema.customers
+#              ADD CONSTRAINT pk_customer_id
+#              PRIMARY KEY (CustomerID);
+#             "
+#  - class: ExecuteQuery
+#    kwargs:
+#      query: "
+#              ALTER TABLE retail_schema.sales_transactions
+#              ADD CONSTRAINT pk_invoice_customer_stock
+#              PRIMARY KEY (InvoiceNo);
+#             "
+#  - class: ExecuteQuery
+#    kwargs:
+#      query: "
+#              ALTER TABLE retail_schema.sales_transactions
+#              ADD CONSTRAINT fk_stock_code
+#              FOREIGN KEY (StockCode)
+#              REFERENCES retail_schema.products (StockCode);
+#             "
+#  - class: ExecuteQuery
+#    kwargs:
+#      query: "
+#              CREATE INDEX IF NOT EXISTS idx_stock_code ON table_name (retail_schema.sales_transactions);
+#             "
+  - class: CloseDatabaseConnection
