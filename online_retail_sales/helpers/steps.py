@@ -495,7 +495,12 @@ class ExecuteQuery(PipelineStep):
                 columns = result.keys()
                 return pd.DataFrame(data, columns=columns)
         else:
-            # For queries other than SELECT, execute directly on the database
-            with db_engine.connect() as conn:
-                conn.execute(text(query))
+            try:
+                # For queries other than SELECT, execute directly on the database
+                with db_engine.connect() as conn:
+                    conn.execute(text(query))
+                    conn.commit()
+            except Exception as e:
+                conn.rollback()
+                print("Error:", e)
             return data

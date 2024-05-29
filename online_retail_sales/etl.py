@@ -19,4 +19,4 @@ if __name__ == "__main__":
     pipeline_steps = config['pipeline_steps']
 
     df = execute_pipeline(pipeline_steps, module_name)
-    print(df.shape)
+    print(f"The final shape of the df is: \n rows: {df.shape[0]}\n columns: {df.shape[1]}")

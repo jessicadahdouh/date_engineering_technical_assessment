@@ -35,38 +35,39 @@ pipeline_steps:
       table_name: "sales_transactions"
       table_columns: ['InvoiceNo', 'StockCode', 'Quantity', 'InvoiceDate', 'CustomerID']
       distinct: 0
-#  - class: ExecuteQuery
-#    kwargs:
-#      query: "
-#              ALTER TABLE retail_schema.products
-#              ADD CONSTRAINT pk_stock_code
-#              PRIMARY KEY (StockCode);
-#             "
-#  - class: ExecuteQuery
-#    kwargs:
-#      query: "
-#              ALTER TABLE retail_schema.customers
-#              ADD CONSTRAINT pk_customer_id
-#              PRIMARY KEY (CustomerID);
-#             "
-#  - class: ExecuteQuery
-#    kwargs:
-#      query: "
-#              ALTER TABLE retail_schema.sales_transactions
-#              ADD CONSTRAINT pk_invoice_customer_stock
-#              PRIMARY KEY (InvoiceNo);
-#             "
+  - class: ExecuteQuery
+    kwargs:
+      query: "
+              ALTER TABLE retail_schema.products
+              ADD product_id SERIAL,
+              ADD PRIMARY KEY (product_id);
+             "
+  - class: ExecuteQuery
+    kwargs:
+      query: "
+              ALTER TABLE retail_schema.customers
+              ADD customer_id SERIAL,
+              ADD PRIMARY KEY (customer_id);
+             "
+  - class: ExecuteQuery
+    kwargs:
+      query: "
+              ALTER TABLE retail_schema.sales_transactions
+              ADD order_id SERIAL,
+              ADD PRIMARY KEY (order_id);
+             "
+# This part will be executed after contacting the client and discussing which stock code to keep
 #  - class: ExecuteQuery
 #    kwargs:
 #      query: "
 #              ALTER TABLE retail_schema.sales_transactions
 #              ADD CONSTRAINT fk_stock_code
-#              FOREIGN KEY (StockCode)
-#              REFERENCES retail_schema.products (StockCode);
+#              FOREIGN KEY ('StockCode')
+#              REFERENCES retail_schema.products ('StockCode');
 #             "
 #  - class: ExecuteQuery
 #    kwargs:
 #      query: "
-#              CREATE INDEX IF NOT EXISTS idx_stock_code ON table_name (retail_schema.sales_transactions);
+#              CREATE INDEX IF NOT EXISTS idx_stock_code ON table_name ('retail_schema.sales_transactions');
 #             "
   - class: CloseDatabaseConnection
